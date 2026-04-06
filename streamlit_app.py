@@ -30,13 +30,17 @@ def extract_features(segment, fs=256):
         mob  = np.std(diff1) / (np.std(s) + 1e-8)
         comp = (np.std(diff2) / (np.std(diff1) + 1e-8)) / (mob + 1e-8)
         freqs, psd = sp_signal.welch(s, fs=fs, nperseg=256)
-        def bp(lo, hi):
-            return np.trapz(psd[(freqs>=lo)&(freqs<=hi)],
-                            freqs[(freqs>=lo)&(freqs<=hi)])
+
+        # Bandpower calculated inline — no nested function
+        delta = float(np.trapz(psd[(freqs>=0.5)&(freqs<=4.0)],  freqs[(freqs>=0.5)&(freqs<=4.0)]))
+        theta = float(np.trapz(psd[(freqs>=4.0)&(freqs<=8.0)],  freqs[(freqs>=4.0)&(freqs<=8.0)]))
+        alpha = float(np.trapz(psd[(freqs>=8.0)&(freqs<=13.0)], freqs[(freqs>=8.0)&(freqs<=13.0)]))
+        beta  = float(np.trapz(psd[(freqs>=13.0)&(freqs<=30.0)],freqs[(freqs>=13.0)&(freqs<=30.0)]))
+
         features.extend([
-            np.mean(s), np.var(s), np.std(s),
-            kurtosis(s), skew(s), mob, comp,
-            bp(0.5,4), bp(4,8), bp(8,13), bp(13,30)
+            float(np.mean(s)), float(np.var(s)), float(np.std(s)),
+            float(kurtosis(s)), float(skew(s)), mob, comp,
+            delta, theta, alpha, beta
         ])
     return np.array(features)
 
