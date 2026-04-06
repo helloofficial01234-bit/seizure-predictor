@@ -21,7 +21,11 @@ def bandpower(psd, freqs, lo, hi):
     freqs = np.asarray(freqs)
     psd   = np.asarray(psd)
     mask  = np.logical_and(freqs >= lo, freqs <= hi)
-    return float(np.trapz(psd[mask], freqs[mask]))
+    # Compatible with both old and new NumPy versions
+    if hasattr(np, 'trapezoid'):
+        return float(np.trapezoid(psd[mask], freqs[mask]))
+    else:
+        return float(np.trapz(psd[mask], freqs[mask]))
 
 def extract_features(segment, fs=256):
     features = []
