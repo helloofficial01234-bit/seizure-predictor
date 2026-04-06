@@ -21,7 +21,6 @@ def bandpower(psd, freqs, lo, hi):
     freqs = np.asarray(freqs)
     psd   = np.asarray(psd)
     mask  = np.logical_and(freqs >= lo, freqs <= hi)
-    # Compatible with both old and new NumPy versions
     if hasattr(np, 'trapezoid'):
         return float(np.trapezoid(psd[mask], freqs[mask]))
     else:
@@ -51,7 +50,7 @@ def extract_features(segment, fs=256):
         ])
     return np.array(features, dtype=np.float64)
 
-st.title("Patient-Specific Seizure Prediction")
+st.title("🧠 Patient-Specific Seizure Prediction")
 st.markdown("**Advanced Machine Learning · CHB-MIT EEG Dataset · Random Forest + GCN**")
 st.divider()
 
@@ -62,23 +61,20 @@ with col1:
     mode = st.radio("Select input mode", ["Use demo sample", "Upload .npy file"])
 
     if mode == "Use demo sample":
-    demo_type = st.selectbox(
-        "Choose demo type",
-        ["Seizure-like signal", "Normal signal"]
-    )
-    np.random.seed(42)
-    t = np.linspace(0, 8, 2048)
-    if demo_type == "Seizure-like signal":
-        st.warning("Demo: High-frequency seizure-like EEG loaded.")
-        sample = np.random.randn(18, 2048) * 30
-        for ch in range(18):
-            sample[ch] += 120 * np.sin(2 * np.pi * 3 * t)
-            sample[ch] += 60  * np.sin(2 * np.pi * 8 * t)
-    else:
-        st.info("Demo: Normal background EEG loaded.")
-        sample = np.random.randn(18, 2048) * 20
-        for ch in range(18):
-            sample[ch] += 10 * np.sin(2 * np.pi * 10 * t)
+        demo_type = st.selectbox("Choose demo type", ["Seizure-like signal", "Normal signal"])
+        np.random.seed(42)
+        t = np.linspace(0, 8, 2048)
+        if demo_type == "Seizure-like signal":
+            st.warning("Demo: High-frequency seizure-like EEG loaded.")
+            sample = np.random.randn(18, 2048) * 30
+            for ch in range(18):
+                sample[ch] += 120 * np.sin(2 * np.pi * 3 * t)
+                sample[ch] += 60  * np.sin(2 * np.pi * 8 * t)
+        else:
+            st.info("Demo: Normal background EEG loaded.")
+            sample = np.random.randn(18, 2048) * 20
+            for ch in range(18):
+                sample[ch] += 10 * np.sin(2 * np.pi * 10 * t)
     else:
         uploaded = st.file_uploader("Upload .npy file — shape (18, 2048)", type=['npy'])
         if uploaded:
@@ -118,7 +114,7 @@ with col2:
     ch_names = ['FP1-F7','F7-T7','T7-P7','P7-O1','P7-O2','FP2-F4',
                 'F4-C4','C4-P4','P4-O2','FP1-F3','F3-C3','C3-P3',
                 'P3-O1','FZ-CZ','CZ-PZ','P3-O2','FP2-F8','F8-T8']
-    t_ax  = np.linspace(0, 8, 2048)
+    t_ax   = np.linspace(0, 8, 2048)
     n_show = st.slider("Channels to display", 2, 18, 6)
 
     fig_eeg, axes = plt.subplots(n_show, 1, figsize=(10, n_show * 1.2), sharex=True)
