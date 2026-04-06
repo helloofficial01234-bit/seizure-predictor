@@ -62,12 +62,23 @@ with col1:
     mode = st.radio("Select input mode", ["Use demo sample", "Upload .npy file"])
 
     if mode == "Use demo sample":
-        st.info("Using a synthetic EEG window for demonstration.")
-        np.random.seed(42)
-        sample = np.random.randn(18, 2048) * 50
-        t = np.linspace(0, 8, 2048)
-        for ch in range(6):
-            sample[ch] += 80 * np.sin(2 * np.pi * 3 * t)
+    demo_type = st.selectbox(
+        "Choose demo type",
+        ["Seizure-like signal", "Normal signal"]
+    )
+    np.random.seed(42)
+    t = np.linspace(0, 8, 2048)
+    if demo_type == "Seizure-like signal":
+        st.warning("Demo: High-frequency seizure-like EEG loaded.")
+        sample = np.random.randn(18, 2048) * 30
+        for ch in range(18):
+            sample[ch] += 120 * np.sin(2 * np.pi * 3 * t)
+            sample[ch] += 60  * np.sin(2 * np.pi * 8 * t)
+    else:
+        st.info("Demo: Normal background EEG loaded.")
+        sample = np.random.randn(18, 2048) * 20
+        for ch in range(18):
+            sample[ch] += 10 * np.sin(2 * np.pi * 10 * t)
     else:
         uploaded = st.file_uploader("Upload .npy file — shape (18, 2048)", type=['npy'])
         if uploaded:
